@@ -1,8 +1,10 @@
+from flask import Blueprint, render_template, request, redirect, url_for, current_app, send_from_directory
 import os
-from flask import current_app, render_template, request, send_from_directory, redirect, url_for
 from .utils import pdf_to_jpg
 
-@app.route('/', methods=['GET', 'POST'])
+bp = Blueprint('routes', __name__)
+
+@bp.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         if 'file' not in request.files:
@@ -16,9 +18,9 @@ def index():
             file.save(upload_path)
             output_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'output')
             pdf_to_jpg(upload_path, output_dir)
-            return redirect(url_for('download_file', filename=filename.split('.')[0] + '_1.jpg'))
+            return redirect(url_for('routes.download_file', filename=filename.split('.')[0] + '_1.jpg'))
     return render_template('index.html')
 
-@app.route('/uploads/<filename>')
+@bp.route('/uploads/<filename>')
 def download_file(filename):
-    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
+    return send_from_directory(os.path.join(current_app.config['UPLOAD_FOLDER'], 'output'), filename)

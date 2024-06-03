@@ -20,9 +20,17 @@ def index():
         if file and file.filename.endswith('.pdf'):
             filename = file.filename
             upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            
+            # Ensure the upload directory exists
+            os.makedirs(current_app.config['UPLOAD_FOLDER'], exist_ok=True)
+            
             file.save(upload_path)
             
             output_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'output')
+            
+            # Ensure the output directory exists
+            os.makedirs(output_dir, exist_ok=True)
+            
             pdf_to_jpg(upload_path, output_dir)
             
             # Assuming you want to redirect to the first converted image
